@@ -4,7 +4,7 @@
 <br>
 <br>
 
-#### Since "SettingSyncHost.exe -Embedding" Runs a Thread On "SHCore.dll!Ordinal172+0x100", We can hijack the flow before this thread start to do that :
+#### Since "SettingSyncHost.exe -Embedding" Runs a Thread On "SHCore.dll!Ordinal172+0x100", We can hijack the flow before this thread start, to do that :
 
 - Load shcore.dll to calculate the thread's entry
 - Create "SettingSyncHost.exe -Embedding" Process
