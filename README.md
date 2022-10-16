@@ -25,4 +25,4 @@
 <br>
 <br>
 
-#### Note That This is An idea more than a stable poc on a process injection technique, you can find a lot of such processes (creating such threads) and implement your own code using the same way for the same results ...
+#### Note That This is An idea more than a stable poc on a process injection technique, you can find a lot of such processes (creating such threads) and implement your own code using the same way for the same results ... (for example on my machine, the same process have a thread on combase.dll!InternalTlsAllocData+0x70)
