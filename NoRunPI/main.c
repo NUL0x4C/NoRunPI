@@ -1,6 +1,6 @@
 /*
 
-																		@ORCx41 | ORCA
+										@ORCx41 | ORCA
 	No Run Process Injection :
 		
 		Since "SettingSyncHost.exe -Embedding" Runs a Thread On "SHCore.dll!Ordinal172+0x100", We can hijack the flow before this thread start
@@ -14,7 +14,7 @@
 			- resume the process
 			- $$
 
-																[ ~ Tested On W10 - 10.0.19044 ~ ]
+									[ ~ Tested On W10 - 10.0.19044 ~ ]
 */
 
 #include <Windows.h>
@@ -22,7 +22,7 @@
 
 #define TARGET_PROCESS_NAME				L"SettingSyncHost.exe -Embedding"
 #define ORDINAL172						172					
-#define WAIT_TIME						5												// MAX : 16 - MIN : 1  
+#define WAIT_TIME						5	// MAX : 16 - MIN : 1  
 
 
 
