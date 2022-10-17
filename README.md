@@ -8,7 +8,7 @@
 
 - Load shcore.dll to calculate the thread's entry
 - Create "SettingSyncHost.exe -Embedding" Process
-- Wait for ~ 5 ms ~ just make sure that the newly created process loads shcore.dll		[NOTE ON THIS IN THE CODE]
+- BruteForce the address calculated (stop when its valid)
 - suspend the process
 - inject the payload to the calculated address
 - resume the process
